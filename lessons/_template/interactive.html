@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>正弦波互動範例</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:24px;font:16px system-ui,sans-serif;color:#17263a;background:#fff}h2{margin-top:0}p{line-height:1.7;color:#486074}.controls{display:flex;flex-wrap:wrap;gap:24px}label{flex:1;min-width:180px;font-weight:650}input{display:block;width:100%;margin:16px 0;accent-color:#126f89}canvas{width:100%;height:auto;display:block;margin:24px 0;border:1px solid #d9e3ea;border-radius:12px}output{color:#126f89}button{padding:10px 16px;border:1px solid #cbdde5;border-radius:8px;background:#eef4f7;color:#24465b;font:inherit;cursor:pointer}input:focus-visible,button:focus-visible{outline:3px solid #55adbb;outline-offset:3px}
+</style></head>
+<body>
+<h2>振幅與頻率如何影響波形？</h2>
+<p>拖動滑桿即時更新，觀察振幅改變波高、頻率改變週期。</p>
+<div class="controls">
+<label>振幅 A：<output id="amplitude-value">1.0</output><input id="amplitude" type="range" min="0" max="3" step="0.1" value="1"></label>
+<label>頻率 f：<output id="frequency-value">2.0 Hz</output><input id="frequency" type="range" min="0.5" max="5" step="0.1" value="2"></label>
+</div>
+<canvas id="wave" width="900" height="420" role="img" aria-label="正弦波曲線"></canvas>
+<p id="description" role="status" aria-live="polite"></p><button id="reset" type="button">還原參數</button>
+<script>
+const a=document.getElementById('amplitude'),f=document.getElementById('frequency');
+const canvas=document.getElementById('wave'),ctx=canvas.getContext('2d');
+function draw(){
+  const A=Number(a.value),F=Number(f.value);
+  document.getElementById('amplitude-value').value=A.toFixed(1);
+  document.getElementById('frequency-value').value=F.toFixed(1)+' Hz';
+  const summary=`振幅 ${A.toFixed(1)}，頻率 ${F.toFixed(1)} Hz，週期 ${(1/F).toFixed(2)} 秒。`;
+  document.getElementById('description').textContent=summary;canvas.setAttribute('aria-label',summary);
+  ctx.clearRect(0,0,900,420);ctx.font='15px system-ui';ctx.fillStyle='#597185';
+  for(let i=0;i<=8;i++){const x=55+i*100;ctx.strokeStyle='#e1eaf0';ctx.beginPath();ctx.moveTo(x,25);ctx.lineTo(x,365);ctx.stroke();ctx.fillText((i/4).toFixed(2),x-15,390);}
+  for(let y=-3;y<=3;y++){const py=195-y*52;ctx.strokeStyle=y===0?'#8fa6b5':'#e1eaf0';ctx.beginPath();ctx.moveTo(55,py);ctx.lineTo(855,py);ctx.stroke();ctx.fillText(String(y),22,py+5);}
+  ctx.strokeStyle='#126f89';ctx.lineWidth=3;ctx.beginPath();
+  for(let i=0;i<=800;i++){const t=i/400,y=195-A*Math.sin(2*Math.PI*F*t)*52;if(i===0)ctx.moveTo(55+i,y);else ctx.lineTo(55+i,y);}ctx.stroke();
+}
+a.addEventListener('input',draw);f.addEventListener('input',draw);
+document.getElementById('reset').addEventListener('click',()=>{a.value=1;f.value=2;draw();});draw();
+</script></body></html>

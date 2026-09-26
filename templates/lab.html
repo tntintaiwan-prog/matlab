@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}K-means 互動實驗室 · MATLAB 學習歷程{% endblock %}
+{% block content %}
+<article class="detail">
+  <a class="back" href="/courses/{{ course.id }}/">← 返回學習成果與程式碼</a>
+  <p class="eyebrow">學習成果 {{ '%02d'|format(course.week) }} · 互動模式</p>
+  <h1>K-means 互動實驗室</h1>
+  <p class="lead">調整參數、觀察分群，逐步了解中心點如何收斂。</p>
+  {% include 'kmeans_lab.html' %}
+</article>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.experiment_title }} · 學習歷程{% endblock %}
+{% block content %}
+<article class="detail">
+  <a class="back" href="/courses/{{ course.id }}/">← 返回學習成果與程式碼</a>
+  <p class="eyebrow">學習成果 {{ '%02d'|format(course.week) }} · 互動模式</p>
+  <h1>{{ course.experiment_title }}</h1>
+  <iframe class="custom-experiment" src="/static/experiments/{{ course.id }}/index.html" title="{{ course.experiment_title }}" sandbox="allow-scripts allow-downloads" referrerpolicy="no-referrer"></iframe>
+</article>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }} · MATLAB 學習歷程{% endblock %}
+{% block content %}
+<article class="detail">
+  <a href="/" class="back">← 返回學習歷程</a>
+  <p class="eyebrow">學習成果 {{ '%02d'|format(course.week) }} · {{ course.lesson_date }}</p>
+  <h1>{{ course.title }}</h1>
+  {% if article %}<p class="byline">{{ article.class_name }} · {{ article.author }}</p>{% endif %}
+  <p class="lead">{{ course.summary }}</p>
+  {% if article %}
+  <nav class="lesson-nav" aria-label="成果章節">{% if interactive_code %}<a href="/courses/{{ course.id }}/lab/">開啟互動實驗室 ↗</a><a href="#python-code">Python 程式</a>{% endif %}<a href="#process">實作流程</a><a href="#results">成果圖表</a><a href="#code">MATLAB 程式</a><a href="#reflection">學習心得</a><a href="#resources">補充資源</a></nav>
+
+  <section id="process"><h2>實作流程</h2><ol class="lesson-steps">{% for title, body in article.steps %}<li><h3>{{ title }}</h3><p>{{ body }}</p></li>{% endfor %}</ol></section>
+  <section id="results"><h2>成果圖表</h2><div class="result-grid">{% for file, title, caption in article.figures %}<figure><img src="/static/lessons/kmeans0923/{{ file }}" alt="{{ caption }}" loading="lazy"><figcaption><strong>{{ title }}</strong><p>{{ caption }}</p></figcaption></figure>{% endfor %}</div></section>
+  {% endif %}
+  <section id="code"><h2>MATLAB 程式</h2>{% if course.matlab_code %}<pre><code>{{ course.matlab_code }}</code></pre>{% else %}<p>尚未整理。</p>{% endif %}
+  {% if article %}<details class="code-notes"><summary>程式整理與執行說明</summary><p>{{ article.editing_note }}</p></details>
+  <h3>函式輸出說明</h3><dl class="output-list">{% for name, description in article.outputs %}<dt><code>{{ name }}</code></dt><dd>{{ description }}</dd>{% endfor %}</dl><p class="reference">距離定義參考 <a href="https://www.mathworks.com/help/stats/kmeans.html" target="_blank" rel="noopener noreferrer">MathWorks kmeans 官方文件</a>。</p>{% endif %}
+  </section>
+  {% if interactive_code %}<section id="python-code"><h2>Python 程式</h2><p>以 NumPy 實作 K-means，保留作為 MATLAB 的延伸學習與本機練習。互動實驗室使用 JavaScript 運算，因此固定種子產生的資料與此 Python 版可能不同。</p><p><a href="/static/python/kmeans_lab.py" download="kmeans_lab.py">下載 Python 程式</a></p><details class="python-source"><summary>展開完整 Python 程式</summary><pre><code>{{ interactive_code }}</code></pre></details><p>本機執行需先安裝 NumPy。</p></section>
+  {% elif course.python_code %}<section id="python-code"><h2>Python 延伸</h2><pre><code>{{ course.python_code }}</code></pre><p class="note">這裡展示程式碼。</p></section>{% endif %}
+  <section id="reflection"><h2>心得與遇到的問題</h2><div class="reflection">{% for paragraph in (course.reflection or '尚未整理。').split('\n') %}{% if paragraph %}<p>{{ paragraph }}</p>{% endif %}{% endfor %}</div></section>
+  {% if article %}<section id="resources"><h2>補充學習資料</h2><div class="resource-grid">{% for resource in article.resources %}<a class="resource-card" href="{{ resource.url }}" target="_blank" rel="noopener noreferrer"><img src="/static/lessons/kmeans0923/{{ resource.image }}" alt="原文件收錄的 {{ resource.title }} 影片截圖" loading="lazy"><h3>{{ resource.title }}</h3><span>前往 YouTube 觀看 ↗</span></a>{% endfor %}</div><p class="reference">內容整理自 {{ article.source }}；成果圖與影片截圖保留自原文件。</p></section>{% endif %}
+</article>
+{% endblock %}

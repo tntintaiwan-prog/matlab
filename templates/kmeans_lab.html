@@ -1,0 +1,24 @@
+<section id="interactive" class="lab" aria-labelledby="lab-title">
+  <div class="lab-heading"><div><p class="eyebrow">K-MEANS 互動實驗室</p><h2 id="lab-title">親手試試 K-means 分群</h2></div><span class="lab-badge">在你的瀏覽器執行</span></div>
+  <p>改變分群數，觀察同一批資料如何重新分組；拖動迭代步驟，看看中心點如何移動。</p>
+  <form id="lab-form" class="lab-controls">
+    <label for="lab-number">資料點數<input id="lab-number" name="number" type="number" min="50" max="5000" step="1" value="1000" required></label>
+    <label for="lab-k">分群數 K<input id="lab-k" name="k" type="number" min="1" max="10" step="1" value="5" required></label>
+    <label for="lab-seed">隨機種子<input id="lab-seed" name="seed" type="number" min="0" max="999999" step="1" value="23" required></label>
+    <label for="lab-max-iter">迭代上限<input id="lab-max-iter" name="max_iter" type="number" min="1" max="100" step="1" value="100" required></label>
+    <div class="lab-buttons"><button id="lab-run" type="submit">開始分群</button><button id="lab-stop" class="secondary" type="button" disabled>停止</button><button id="lab-reset" class="secondary" type="button">還原課堂參數</button></div>
+  </form>
+  <p class="lab-hint">預設為 1,000 個點、5 群。相同種子可重現資料，改變 K 時方便比較。直接在瀏覽器計算，不需下載運算套件。</p>
+  <p id="lab-status" class="lab-status" role="status" aria-live="polite">準備好了，按「開始分群」開始。</p>
+  <noscript><p>請啟用 JavaScript 以使用互動模式。可返回學習成果頁閱讀 MATLAB 與 Python 程式。</p></noscript>
+  <div id="lab-results" hidden>
+    <p id="lab-result-params" class="lab-hint"></p>
+    <div class="lab-metrics"><div><span>目前步驟</span><strong id="lab-iteration">—</strong></div><div><span>群內平方距離總和 SSE</span><strong id="lab-sse">—</strong></div><div><span>執行結果</span><strong id="lab-convergence">—</strong></div></div>
+    <div class="lab-plots"><figure><figcaption>原始資料分布</figcaption><canvas id="lab-original" width="640" height="450" role="img" aria-label="原始二維資料散佈圖"></canvas></figure><figure><figcaption>分群結果 · 黑色叉號為中心</figcaption><canvas id="lab-clusters" width="640" height="450" role="img" aria-label="分群散佈圖，群中心以黑色叉號表示；各群數量與座標列於下方表格"></canvas></figure></div>
+    <div class="lab-timeline"><label for="lab-step">查看迭代步驟 <output id="lab-step-label" for="lab-step">0</output></label><input id="lab-step" type="range" min="0" max="1" value="0"><div><button id="lab-play" class="secondary" type="button">播放過程</button><button id="lab-csv" class="secondary" type="button">下載目前步驟 CSV</button></div></div>
+    <details id="lab-export" hidden><summary>CSV 已產生 · 查看或複製資料</summary><p class="lab-hint">若瀏覽器未自動下載，可從這裡複製 CSV。</p><textarea id="lab-csv-preview" aria-label="目前步驟的 CSV 資料" rows="6" readonly></textarea></details>
+    <p class="lab-hint">步驟 0 是初始中心與分群；SSE 越小表示資料越靠近各自中心，但不能只靠它決定最適合的 K。</p>
+    <div class="lab-table-wrap"><table class="lab-table"><caption>目前步驟的群中心與資料數</caption><thead><tr><th scope="col">群別</th><th scope="col">點數</th><th scope="col">中心 X</th><th scope="col">中心 Y</th><th scope="col">群內平方距離</th></tr></thead><tbody id="lab-cluster-table"></tbody></table></div>
+  </div>
+</section>
+<script src="/static/kmeans-lab.js?v=3" defer></script>

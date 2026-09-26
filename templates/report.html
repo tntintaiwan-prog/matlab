@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }} · MATLAB 學習歷程{% endblock %}
+{% block content %}
+<article class="detail report">
+  <a class="back" href="/">← 返回學習歷程</a>
+  <p class="eyebrow">學習成果 {{ '%02d'|format(course.week) }} · {{ course.lesson_date }}</p>
+  <h1>{{ course.title }}</h1>
+  {% if course.author or course.class_name %}<p class="byline">{{ course.class_name }} {{ course.author }}</p>{% endif %}
+  <p class="lead">{{ course.summary }}</p>
+  {% if course.interactive %}<nav class="lesson-nav" aria-label="課程導覽"><a href="/courses/{{ course.id }}/lab/">開啟互動實驗室 ↗</a>{% if course.matlab_code %}<a href="#matlab">MATLAB 程式</a>{% endif %}{% if course.python_code or interactive_code %}<a href="#python">Python 程式</a>{% endif %}</nav>{% endif %}
+  <div class="report-body">{{ course.body_html | safe }}</div>
+  {% if course.matlab_code %}<section id="matlab"><h2>MATLAB 程式</h2><pre><code>{{ course.matlab_code }}</code></pre></section>{% endif %}
+  {% if course.python_code or interactive_code %}<section id="python"><h2>Python 程式</h2><pre><code>{{ course.python_code or interactive_code }}</code></pre></section>{% endif %}
+  <p class="reference">來源：{{ course.source }}</p>
+</article>
+{% endblock %}
