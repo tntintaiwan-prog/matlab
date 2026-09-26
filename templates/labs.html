@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}互動頁面總覽 · MATLAB 學習歷程{% endblock %}
+{% block content %}
+<section class="intro">
+  <p class="eyebrow">動手探索與實作</p>
+  <h1>互動頁面總覽</h1>
+  <p>選擇課程，進入互動實驗。透過調整參數與觀察結果，理解每個主題的運作方式。</p>
+</section>
+<section class="section">
+  <div class="section-title"><h2>課程互動實驗</h2><span>{{ courses|length }} 個互動頁面</span></div>
+  {% if courses %}
+  <div class="grid">
+    {% for course in courses %}
+    <article class="card">
+      <span class="week">學習成果 {{ '%02d'|format(course.week) }}</span>
+      <h3>{{ course.title }}</h3>
+      <p>{{ course.summary[:140] }}</p>
+      <div class="lesson-nav">
+        <a href="/courses/{{ course.id }}/lab/">進入互動頁面 ↗</a>
+        <a href="/courses/{{ course.id }}/">閱讀課程內容</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty"><strong>互動課程準備中</strong><p>課程的互動頁面發布後，會自動出現在這裡。</p></div>
+  {% endif %}
+</section>
+{% endblock %}
