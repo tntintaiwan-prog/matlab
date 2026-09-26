@@ -68,5 +68,10 @@
 ![StatQuest: K-means clustering 的影片截圖](assets/image4.png)
 
 [前往 YouTube 觀看](https://youtu.be/4b5d3muPQmA?si=jeTb1m_5RLTAuU93)
+### 機器學習首部曲--- 聚類分析 K-means (字幕)
+
+![機器學習首部曲--- 聚類分析 K-means (字幕) 的影片截圖](assets/image3.png)
+
+[前往 YouTube 觀看](https://youtu.be/LFGLcgeew5A?si=INBp93PP6iFFkUlS)
 
 內容整理自 kmeans0923.docx。互動實驗室採用 JavaScript，Python 保留作為本機參考程式。
