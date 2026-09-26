@@ -70,8 +70,18 @@
 [前往 YouTube 觀看](https://youtu.be/4b5d3muPQmA?si=jeTb1m_5RLTAuU93)
 ### 機器學習首部曲--- 聚類分析 K-means (字幕)
 
-![機器學習首部曲--- 聚類分析 K-means (字幕) 的影片截圖](assets/image3.png)
+![機器學習首部曲--- 聚類分析 K-means (字幕) 的影片截圖](assets/image5.png)
 
 [前往 YouTube 觀看](https://youtu.be/LFGLcgeew5A?si=INBp93PP6iFFkUlS)
+
+## AI 提示詞
+1.	使用 GitHub Pages，不需要後台或資料庫。
+2.	每堂課的「內容頁」與「互動頁」分開顯示，彼此可以連結。
+3.	內容頁保留 MATLAB 與 Python 程式碼。
+4.	互動頁使用 JavaScript 在瀏覽器執行，不使用 Python 執行環境。
+5.	未來只要新增課程資料夾並上傳 GitHub，就能自動加入首頁、內容頁及互動頁。
+6.	新主題的互動程式需另外製作，不能把上傳 Word 當成已自動產生互動程式
+
+
 
 內容整理自 kmeans0923.docx。互動實驗室採用 JavaScript，Python 保留作為本機參考程式。
