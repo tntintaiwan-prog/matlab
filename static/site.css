@@ -22,7 +22,7 @@ body>footer{padding:.85rem max(5vw,1.25rem);padding-bottom:calc(.85rem + env(saf
 /* AI learning portfolio cover */
 :root{background:#faf9f6}
 body>.site-head{background:#fff;color:#393e36;border-bottom:1px solid #e8e3d9;box-shadow:none}
-.cover{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(2rem,6vw,5rem);align-items:center;padding:2rem 0 3.5rem}
+.cover{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);align-items:center;padding:2rem 0 3.5rem}
 .cover-art{background:#eee9dd;padding:2rem 1.5rem 1rem;border-radius:6px;transform:rotate(-1deg)}
 .chalkboard{background:#224a40;border:9px solid #ad8c61;padding:2rem 1.2rem;color:#f7f5dc;box-shadow:0 12px 24px #45382020;text-align:center}
 .chalk-tag{font-size:.65rem;letter-spacing:.2em}.chalkboard strong{display:block;font-size:6rem;line-height:1.25;font-weight:800;letter-spacing:.08em}.chalk-sub{font-size:1.3rem}.chalk-topics{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin:1.7rem 0}.chalk-topics span{border:1px solid #a5bcb0;border-radius:40px;padding:.4rem .7rem;font-size:.8rem}.chalk-line{height:3px;background:#d4b56c;width:60%;margin:1rem auto}.chalkboard small{letter-spacing:.15em}.art-caption{display:block;text-align:center;margin:1rem 0 .2rem;font-size:.8rem;color:#645e4e}
@@ -31,4 +31,5 @@ body>.site-head{background:#fff;color:#393e36;border-bottom:1px solid #e8e3d9;bo
 .extension-preview{margin-top:2.5rem;padding:1.8rem;background:#eeeade;border-radius:12px;line-height:1.8}.extension-preview h2{margin:.4rem 0}.extension-preview p{max-width:750px}.extension-preview .eyebrow{color:#766642}.coming-soon{display:inline-block;color:#615639;border:1px solid #c8bfa8;padding:.3rem .8rem;border-radius:30px;font-size:.8rem}
 @media(max-width:730px){.cover{grid-template-columns:1fr;padding-top:1rem;gap:2rem}.cover-art{max-width:440px;width:100%;margin:auto}.learning-path{grid-template-columns:1fr;gap:1.5rem}.site-head nav{font-size:.85rem}.site-head nav a{font-size:.85rem}}
 
-.cover-photo{margin:0;padding:0 0 1rem;transform:none;overflow:hidden;background:#f0ecdf}.cover-photo img{display:block;width:100%;height:auto}.cover-photo .art-caption{padding:0 .8rem}
+.cover-photo{max-width:320px;width:100%;justify-self:start;margin:0;padding:0 0 1rem;transform:none;overflow:hidden;background:#f0ecdf}.cover-photo img{display:block;width:100%;height:auto}.cover-photo .art-caption{padding:0 .8rem}
+
