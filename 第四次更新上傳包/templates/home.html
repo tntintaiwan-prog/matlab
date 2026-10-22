@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}AI 課程學習歷程 · 陳世展{% endblock %}
+{% block content %}
+<section class="cover">
+<figure class="cover-art cover-photo"><img src="/static/ai-classroom.png" width="1536" height="1024" alt="AI 課堂教學插圖：老師介紹機器學習、深度學習與程式設計，學生在座位上學習" fetchpriority="high"><figcaption class="art-caption">每一次實作，都是新的發現。</figcaption></figure>
+<div class="cover-copy"><p class="eyebrow">我的學習與實作紀錄</p><h1>AI 課程<br>學習歷程</h1><p class="cover-author">製作者｜陳世展</p><p class="cover-description">記錄我在 AI 課程中的學習與實作，整理 MATLAB、Python 程式、實驗成果與學習心得。透過互動實驗與延伸應用，探索演算法如何解決實際問題。</p><div class="cover-actions"><a class="cover-primary" href="#courses">開始瀏覽課程 ↗</a><a href="/labs/">探索互動實驗 →</a></div></div>
+</section>
+<ol class="learning-path" aria-label="學習路徑"><li><span>01</span><div><strong>閱讀課程與程式</strong><p>理解概念，對照實作方法。</p></div></li><li><span>02</span><div><strong>操作互動實驗</strong><p>調整參數，觀察結果變化。</p></div></li><li><span>03</span><div><strong>探索延伸應用</strong><p>連結課堂知識與新的挑戰。</p></div></li></ol>
+<section class="section" id="courses"><div class="section-title"><h2>課程歷程</h2><span>{{ courses|length }} 堂已發布</span></div>
+{% if courses %}<div class="grid">{% for course in courses %}<article class="card"><span class="week">學習成果 {{ '%02d'|format(course.week) }}</span><h3>{{ course.title }}</h3><p>{{ course.summary[:140] }}</p><span class="date">{{ course.lesson_date }}</span><div class="lesson-nav"><a href="/courses/{{ course.id }}/">閱讀課程 →</a>{% if course.interactive %}<a href="/courses/{{ course.id }}/lab/">互動實驗 ↗</a>{% endif %}</div></article>{% endfor %}</div>{% else %}<div class="empty">課程整理中，發布後將顯示於此。</div>{% endif %}</section>
+<section class="extension-preview section" id="extensions"><p class="eyebrow">將學習再往前推進一步</p><h2>課程延伸</h2><p>把課堂知識用在不同情境，探索靜態圖片、人臉偵測門檻與手勢遊戲。</p><a class="coming-soon" href="/extensions/">前往課程延伸 →</a></section>
+{% endblock %}
+
+

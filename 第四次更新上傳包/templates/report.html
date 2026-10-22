@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }} · MATLAB 學習歷程{% endblock %}
+{% block content %}
+<article class="detail report">
+  <a class="back" href="/">← 返回學習歷程</a>
+  <p class="eyebrow">學習成果 {{ '%02d'|format(course.week) }} · {{ course.lesson_date }}</p>
+  <h1>{{ course.title }}</h1>
+  {% if course.author or course.class_name %}<p class="byline">{{ course.class_name }} {{ course.author }}</p>{% endif %}
+  <p class="lead">{{ course.summary }}</p>
+  {% if course.date_note %}<p class="note">{{ course.date_note }}</p>{% endif %}
+  {% if course.has_extensions %}<nav class="lesson-nav"><a href="/courses/{{ course.id }}/extensions/">課程延伸：圖片偵測與手勢遊戲 ↗</a></nav><section><h2>原課程與網頁延伸的差異</h2><p>以下文件與心得保留原稿。MATLAB 程式使用級聯偵測器；新增 Python 範例使用 OpenCV Haar cascade；網頁互動採用 MediaPipe BlazeFace。三者都示範偵測流程，但模型、參數及結果不保證相同。</p><p>Python 範例使用 Q、Esc 或關閉視窗結束，並在結束或錯誤時釋放攝影機。MATLAB 保留原稿的停止按鈕。原稿中的 Wecom／Webcom 指 webcam；人臉偵測只找出人臉位置，並不識別身分。本機範例尚未以實體攝影機驗證。</p></section>{% endif %}
+  {% if course.interactive %}<nav class="lesson-nav" aria-label="課程導覽"><a href="/courses/{{ course.id }}/lab/">開啟互動實驗室 ↗</a>{% if course.matlab_code %}<a href="#matlab">MATLAB 程式</a>{% endif %}{% if course.python_code or interactive_code %}<a href="#python">Python 程式</a>{% endif %}</nav>{% endif %}
+  <div class="report-body">{{ course.body_html | safe }}</div>
+  {% if course.matlab_code %}<section id="matlab"><h2>MATLAB 程式</h2><pre><code>{{ course.matlab_code }}</code></pre></section>{% endif %}
+  {% if course.python_code or interactive_code %}<section id="python"><h2>Python 程式</h2><pre><code>{{ course.python_code or interactive_code }}</code></pre></section>{% endif %}
+  <p class="reference">來源：{{ course.source }}</p>
+</article>
+{% endblock %}

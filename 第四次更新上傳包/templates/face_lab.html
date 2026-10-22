@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}{{ '課程延伸' if extension else '即時人臉偵測' }} · AI 課程學習歷程{% endblock %}
+{% block content %}
+<article class="detail">
+<a class="back" href="/courses/{{ course.id }}/">← 返回課程內容與程式碼</a>
+<p class="eyebrow">學習成果 {{ '%02d'|format(course.week) }} · {{ '課程延伸' if extension else '互動實驗' }}</p>
+<h1>{{ '圖片偵測與手勢遊戲' if extension else '攝影機即時人臉偵測' }}</h1>
+<p class="lead">{{ '用自己的照片探索偵測門檻，或用手勢和電腦玩剪刀石頭布。' if extension else '啟用攝影機，觀察人臉位置、數量與信心分數。' }}</p>
+<nav class="lesson-nav"><a href="/courses/{{ course.id }}/lab/">攝影機偵測</a><a href="/courses/{{ course.id }}/extensions/">課程延伸</a></nav>
+<p class="note">影像只在本機瀏覽器處理，不會上傳。首次操作需連線下載 MediaPipe 模型；只有按下「啟用攝影機」才會要求權限，不使用麥克風。切換模式、離開頁面或切換分頁會停止攝影機。</p>
+<section class="lab" id="vision-app" data-extension="{{ 'true' if extension else 'false' }}">
+{% if extension %}<label for="vision-mode">選擇延伸實驗</label><select id="vision-mode"><option value="image">靜態圖片人臉偵測</option><option value="game">攝影機剪刀石頭布</option></select>{% endif %}
+<div id="image-controls" {% if not extension %}hidden{% endif %}><label for="image-file">選擇 JPG、PNG 或 WebP 圖片（最多 10 MB）</label><input id="image-file" type="file" accept="image/jpeg,image/png,image/webp"><button id="sample-image" class="secondary">載入課程範例圖片</button> <button id="clear-image" class="secondary">清除圖片</button><img id="sample-source" src="/static/reports/{{ course.id }}/image-1.png" alt="" hidden><p class="lab-hint">範例來自原文件的實作截圖，原有紅框與標記是圖片的一部分；網頁會另行偵測。</p></div>
+<div id="camera-controls" {% if extension %}hidden{% endif %}><button id="camera-start">啟用攝影機</button> <button id="camera-stop" class="secondary" disabled>停止攝影機</button></div>
+<div id="face-controls"><label for="confidence">人臉信心分數門檻：<output id="confidence-value">0.50</output></label><input id="confidence" type="range" min="0.1" max="0.9" step="0.05" value="0.5"><p class="lab-hint">門檻較高會略過低分結果，可能減少誤判，也可能漏掉人臉。這不是人臉身分辨識，也不等同 MATLAB 的 MergeThreshold。圖片模式調整後會重新偵測。</p></div>
+<p id="vision-status" class="lab-status" role="status">{{ '請選擇圖片開始。' if extension else '按下啟用攝影機開始。' }}</p>
+<video id="vision-video" autoplay playsinline muted hidden></video>
+<canvas id="vision-canvas" width="640" height="480" style="display:block;width:100%;height:auto;background:#142b30;border-radius:12px" aria-label="偵測結果預覽"></canvas>
+<p id="vision-result" aria-live="polite">尚無偵測結果</p>
+<div id="game-controls" hidden><p>只伸出一隻手：握拳＝石頭、張開手掌＝布、V 字手勢＝剪刀。倒數結束時須保持手勢穩定至少半秒；未辨識到、分數不足或多隻手不計分。</p><button id="play-round" disabled>倒數 3 秒出拳</button> <button id="reset-score" class="secondary">分數歸零</button><p id="game-result" role="status">準備好後開始一回合。</p><p id="game-score">你 0 勝 · 電腦 0 勝 · 平手 0 次</p></div>
+<noscript>請啟用 JavaScript 才能使用偵測功能。</noscript>
+</section>
+<section><h2>這個實驗使用什麼方法？</h2><p>網頁使用 MediaPipe BlazeFace 人臉模型與 Gesture Recognizer 手勢模型；原課程 MATLAB 使用級聯偵測器。這裡比較的是影像擷取、偵測與顯示的流程，而非保證兩種模型輸出相同。</p><p>側臉、遮擋、逆光及小尺寸人臉可能漏偵測。手勢遊戲的模型信心門檻為 0.65，與上方的人臉門檻分開。</p><a href="https://ai.google.dev/edge/mediapipe/solutions/vision/face_detector/web_js" target="_blank" rel="noopener noreferrer">MediaPipe 人臉偵測說明</a> · <a href="https://ai.google.dev/edge/mediapipe/solutions/vision/gesture_recognizer/web_js" target="_blank" rel="noopener noreferrer">手勢辨識說明</a></section>
+</article>
+<script type="module" src="/static/vision-lab.js?v=1"></script>
+{% endblock %}
