@@ -1,6 +1,0 @@
-{% extends 'base.html' %}
-{% block title %}課程延伸 · AI 課程學習歷程{% endblock %}
-{% block content %}
-<section class="intro"><p class="eyebrow">從課堂出發，探索更多可能</p><h1>課程延伸</h1><p>選擇課程，透過新的資料與操作方式探索應用。</p></section>
-<div class="grid">{% for course in courses %}<a class="card" href="/courses/{{ course.id }}/extensions/"><span class="week">學習成果 {{ '%02d'|format(course.week) }}</span><h2>{{ course.title }}</h2><p>靜態圖片人臉偵測、信心分數門檻與攝影機剪刀石頭布。</p><strong>開啟延伸實驗 →</strong></a>{% else %}<p>延伸實驗準備中。</p>{% endfor %}</div>
-{% endblock %}
