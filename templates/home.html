@@ -8,6 +8,7 @@
 <ol class="learning-path" aria-label="學習路徑"><li><span>01</span><div><strong>閱讀課程與程式</strong><p>理解概念，對照實作方法。</p></div></li><li><span>02</span><div><strong>操作互動實驗</strong><p>調整參數，觀察結果變化。</p></div></li><li><span>03</span><div><strong>探索延伸應用</strong><p>連結課堂知識與新的挑戰。</p></div></li></ol>
 <section class="section" id="courses"><div class="section-title"><h2>課程歷程</h2><span>{{ courses|length }} 堂已發布</span></div>
 {% if courses %}<div class="grid">{% for course in courses %}<article class="card"><span class="week">學習成果 {{ '%02d'|format(course.week) }}</span><h3>{{ course.title }}</h3><p>{{ course.summary[:140] }}</p><span class="date">{{ course.lesson_date }}</span><div class="lesson-nav"><a href="/courses/{{ course.id }}/">閱讀課程 →</a>{% if course.interactive %}<a href="/courses/{{ course.id }}/lab/">互動實驗 ↗</a>{% endif %}</div></article>{% endfor %}</div>{% else %}<div class="empty">課程整理中，發布後將顯示於此。</div>{% endif %}</section>
-<section class="extension-preview section" id="extensions"><p class="eyebrow">將學習再往前推進一步</p><h2>課程延伸</h2><p>人臉偵測課程的延伸實驗正在規劃中：靜態圖片偵測、偵測閾值調整，以及剪刀石頭布遊戲。</p><span class="coming-soon">準備中 · 完成後開放操作</span></section>
+<section class="extension-preview section" id="extensions"><p class="eyebrow">將學習再往前推進一步</p><h2>課程延伸</h2><p>把課堂知識用在不同情境，探索靜態圖片、人臉偵測門檻與手勢遊戲。</p><a class="coming-soon" href="/extensions/">前往課程延伸 →</a></section>
 {% endblock %}
+
 

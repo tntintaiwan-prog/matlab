@@ -66,3 +66,18 @@ python preview_local.py
 `python build_static.py` 產生公開 `docs` 與 `github-pages-ready.zip`；`python package_project.py` 產生含自動發布流程的 `github-project-ready.zip`。第一次放到 GitHub 請用後者。
 
 原有本機資料庫與舊設定檔不再使用，也不會包含在 GitHub 原始碼部署包中。
+
+## 人臉偵測課程與課程延伸
+
+`lessons/002-face-detection` 使用 `interactive: "face"`，會自動建立內容頁、攝影機頁與課程延伸頁，並加入 `/labs/` 與 `/extensions/` 總覽。
+
+- 課程內容保留 Word 原稿，另附 MATLAB 與 Python 程式。
+- 日期 2026-10-21 為整理日期，原文件未提供上課日期，可在 lesson.json 修改 date 與 date_note。
+- 瀏覽器使用 MediaPipe Tasks Vision 0.10.21；首次使用需連線至 jsDelivr 與 Google Storage 取得程式、WASM 與模型。
+- 圖片與影片留在本機處理，不會上傳，不要求麥克風權限。
+- 攝影機需要 HTTPS 或 localhost，以及使用者的攝影機許可。停止、切換模式、切換分頁及離開頁面會釋放攝影機。
+- 人臉門檻為模型信心分數，與 MATLAB MergeThreshold、OpenCV minNeighbors 不等效。
+- 遊戲僅接受單隻手、信心分數至少 0.65 的握拳／張掌／V 字手勢，倒數結束需維持穩定半秒，否則不計分。
+- 未授予權限或沒有攝影機時仍可使用靜態圖片功能。
+
+自訂 HTML 仍維持原本的隔離設定；人臉功能使用專用頁面，不放寬任意 HTML 的權限。

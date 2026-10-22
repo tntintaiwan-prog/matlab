@@ -33,3 +33,4 @@ body>.site-head{background:#fff;color:#393e36;border-bottom:1px solid #e8e3d9;bo
 
 .cover-photo{max-width:320px;width:100%;justify-self:start;margin:0;padding:0 0 1rem;transform:none;overflow:hidden;background:#f0ecdf}.cover-photo img{display:block;width:100%;height:auto}.cover-photo .art-caption{padding:0 .8rem}
 
+#vision-app select{display:block;width:100%;max-width:440px;padding:.75rem;margin:.5rem 0 1rem;border:1px solid #b7c9d4;border-radius:8px;background:#fff;color:#17263a;font:inherit}#vision-app input[type=range]{display:block;width:100%;accent-color:#126f89}#vision-app label{font-weight:650}#vision-app canvas{max-height:70vh;object-fit:contain}#vision-app select:focus-visible{outline:3px solid #55adbb;outline-offset:2px}

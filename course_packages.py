@@ -21,7 +21,7 @@ def read_package(folder):
     if not title:
         raise ValueError(f'{folder.name}: title 不可空白')
     kind = data.get('interactive', 'custom')
-    if kind not in ('custom', 'kmeans'):
+    if kind not in ('custom', 'kmeans', 'face'):
         raise ValueError(f'{folder.name}: interactive 請使用 custom 或 kmeans')
     assets = {}
     report = folder / 'report.docx'
@@ -58,6 +58,6 @@ def read_package(folder):
     return dict(id=week, week=week, lesson_date=day, title=title, published=True,
                 summary=data.get('summary', ''), author=data.get('author', ''),
                 class_name=data.get('class_name', ''), body_html=body, assets=assets,
-                source='report.docx' if report.exists() else 'content.md',
+                source='report.docx' if report.exists() else 'content.md', date_note=data.get('date_note', ''),
                 matlab_code=code('matlab.m'), python_code=code('python.py'),
-                interactive=kind, reflection='', experiment_title=data.get('experiment_title', title+'互動實驗室'))
+                interactive=kind, has_extensions=kind == 'face', reflection='', experiment_title=data.get('experiment_title', title+'互動實驗室'))
