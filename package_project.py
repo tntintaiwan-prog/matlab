@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parent
 FILES = ['build_static.py', 'docx_lessons.py', 'course_packages.py', 'preview_local.py',
          'package_project.py', 'requirements-pages.txt', 'README.md', 'GITHUB_PAGES.md', '.gitignore']
 FOLDERS = ['.github', 'lessons', 'static']
-TEMPLATES = ['base.html','home.html','labs.html','detail.html','report.html','lab.html','custom_lab.html','kmeans_lab.html','face_lab.html','extensions.html']
+TEMPLATES = ['base.html','home.html','labs.html','detail.html','report.html','lab.html','custom_lab.html','kmeans_lab.html','face_lab.html','extensions.html','exam_lab.html','exam_guide.html']
 
 
 def package():

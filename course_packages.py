@@ -21,8 +21,8 @@ def read_package(folder):
     if not title:
         raise ValueError(f'{folder.name}: title 不可空白')
     kind = data.get('interactive', 'custom')
-    if kind not in ('custom', 'kmeans', 'face'):
-        raise ValueError(f'{folder.name}: interactive 請使用 custom 或 kmeans')
+    if kind not in ('custom', 'kmeans', 'face', 'exam'):
+        raise ValueError(f'{folder.name}: interactive 請使用 custom、kmeans、face 或 exam')
     assets = {}
     report = folder / 'report.docx'
     content = folder / 'content.md'
