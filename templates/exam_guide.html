@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}期末練習說明與錯誤整理{% endblock %}
+{% block content %}
+<article class="detail report">
+<a class="back" href="/practice/">← 回到程式練習室</a>
+<p class="eyebrow">期末練習 / 使用說明</p>
+<h1>程式背誦與測驗說明</h1>
+<nav class="lesson-nav"><a href="/practice/">開始背程式與測驗 ↗</a><a href="#matlab">查看練習答案</a></nav>
+<div class="report-body">{{ course.body_html | safe }}</div>
+<section id="matlab"><h2>MATLAB 完整練習答案</h2><pre><code>{{ course.matlab_code }}</code></pre></section>
+</article>
+{% endblock %}
