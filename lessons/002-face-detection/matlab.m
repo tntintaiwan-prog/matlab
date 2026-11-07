@@ -1,54 +1,34 @@
-% 同一攝影機畫面，使用兩個滑桿各自調整偵測門檻。
-retina = faceDetector('large-network');
-haar = vision.CascadeObjectDetector();
-fig = figure('Name','RetinaFace 與 Haar 人臉偵測','NumberTitle','off');
-setappdata(fig,'stopFlag',false);
-try
-    cam = webcam(1);
-    left = axes('Parent',fig,'Position',[0.05 0.25 0.43 0.65]);
-    right = axes('Parent',fig,'Position',[0.52 0.25 0.43 0.65]);
-    uicontrol(fig,'Style','text','String','RetinaFace 信心門檻', ...
-        'Units','normalized','Position',[0.05 0.14 0.43 0.04]);
-    uicontrol(fig,'Style','text','String','Haar 合併門檻', ...
-        'Units','normalized','Position',[0.52 0.14 0.43 0.04]);
-    confidence = uicontrol(fig,'Style','slider','Min',0,'Max',1,'Value',0.5, ...
-        'Units','normalized','Position',[0.05 0.10 0.43 0.04]);
-    merge = uicontrol(fig,'Style','slider','Min',1,'Max',10,'Value',5, ...
-        'SliderStep',[1/9 2/9],'Units','normalized','Position',[0.52 0.10 0.43 0.04]);
-    uicontrol(fig,'Style','pushbutton','String','停止偵測', ...
-        'Units','normalized','Position',[0.40 0.01 0.20 0.06], ...
-        'Callback',@(~,~)setappdata(fig,'stopFlag',true));
-
-    while isgraphics(fig) && ~getappdata(fig,'stopFlag')
-        retinaThreshold = confidence.Value;
-        haarThreshold = round(merge.Value);
-        haar.MergeThreshold = haarThreshold;
-        frame = fliplr(snapshot(cam));
-        retinaBoxes = detect(retina,frame,Threshold=retinaThreshold);
-        haarBoxes = step(haar,frame);
-        retinaView = frame;
-        haarView = frame;
-        if ~isempty(retinaBoxes)
-            retinaView = insertShape(frame,'Rectangle',retinaBoxes,'Color','red','LineWidth',3);
-        end
-        if ~isempty(haarBoxes)
-            haarView = insertShape(frame,'Rectangle',haarBoxes,'Color','green','LineWidth',3);
-        end
-        imshow(retinaView,'Parent',left);
-        title(left,sprintf('RetinaFace | %d 張 | 門檻 %.2f',size(retinaBoxes,1),retinaThreshold));
-        imshow(haarView,'Parent',right);
-        title(right,sprintf('Haar | %d 張 | 門檻 %d',size(haarBoxes,1),haarThreshold));
-        drawnow;
+clc;
+clear;
+cam = webcam(1);
+face_detector = vision.CascadeObjectDetector();
+face_detector.MergeThreshold = 5 ;
+fig = figure('Name','Live 人臉辨識','NumberTitle','off');
+stopBit = uicontrol("Style","pushbutton", ...
+                    "String",'停止偵測', ...
+                    'Position',[20 20 100 40], ...
+                    'FontSize',12, ...
+                    'Callback', @(src, event) setappdata(fig, 'stopFlag', true));
+setappdata(fig, 'stopFlag', false);
+while ishandle(fig)
+    %檢查是否按下停止按鈕
+    if getappdata(fig, 'stopFlag')
+        break;
     end
-catch errorInfo
-    clear cam;
-    if isgraphics(fig)
-        close(fig);
-    end
-    rethrow(errorInfo);
+    %取得影像並翻轉
+    image = fliplr(snapshot(cam));
+    %image = fliper(snapshot(cam));
+    %人臉偵測
+    bbox = step(face_detector, image);
+    detected_image = insertObjectAnnotation(image,'rectangle',bbox,'Detected', ...
+        'FontSize',20,'Color','red','LineWidth',5,'TextColor','white');
+    %顯示影像
+    imshow(detected_image);
+    title(['人臉偵測數量為:' num2str(size(bbox,1))]);
+    xlabel('點擊左下角的[停止偵測]可結束');
+    %立即更新圖形視窗中的內容
+    drawnow;
 end
 clear cam;
-if isgraphics(fig)
-    close(fig);
-end
+close all;
 disp('已結束人臉偵測');

@@ -1,8 +1,7 @@
 import {gestureName, winner} from './vision-rules.mjs';
 const $ = id => document.getElementById(id);
-const app=$('vision-app'), video=$('vision-video'), canvas=$('vision-canvas'), canvasB=$('vision-canvas-b');
+const app=$('vision-app'), video=$('vision-video'), canvas=$('vision-canvas'), ctx=canvas.getContext('2d');
 let mode=app.dataset.extension==='true'?'image':'video', stream=null, model=null, image=null;
-let imageResult=null;
 let generation=0, animation=0, round=0, busy=false, lastFrame=-1, lastTick=0, stable=null, stableSince=0, seen=0;
 let scores={player:0,computer:0,draw:0};
 const names=['石頭','布','剪刀'];
@@ -16,11 +15,7 @@ function stop(){
   $('camera-start').disabled=false; $('camera-stop').disabled=true; $('play-round').disabled=true;
   $('game-result').textContent='回合尚未開始。';
 }
-function clear(){
-  imageResult=null;
-  for(const pane of [canvas,canvasB])pane.getContext('2d').clearRect(0,0,pane.width,pane.height);
-  for(const id of ['vision-result','vision-a-count','vision-b-count'])$(id).textContent='尚無偵測結果';
-}
+function clear(){ctx.clearRect(0,0,canvas.width,canvas.height);$('vision-result').textContent='尚無偵測結果';}
 function failure(error){
   stop();
   const messages={NotAllowedError:'攝影機權限未開啟。請在網址列允許攝影機，再重試。',NotFoundError:'找不到攝影機，請連接裝置。',NotReadableError:'攝影機可能正被其他程式使用，請關閉後重試。'};
@@ -30,10 +25,9 @@ async function createModel(kind){
   const mp=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/vision_bundle.mjs');
   const files=await mp.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/wasm');
   if(kind==='game') return mp.GestureRecognizer.createFromOptions(files,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task'},runningMode:'VIDEO',numHands:2});
-  return mp.FaceDetector.createFromOptions(files,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite'},runningMode:kind==='image'?'IMAGE':'VIDEO',minDetectionConfidence:0.1});
+  return mp.FaceDetector.createFromOptions(files,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite'},runningMode:kind==='image'?'IMAGE':'VIDEO',minDetectionConfidence:Number($('confidence').value)});
 }
-function draw(canvas,source,result,mirror=false){
-  const ctx=canvas.getContext('2d');
+function draw(source,result,mirror=false){
   const w=source.videoWidth || source.width, h=source.videoHeight || source.height;
   if(canvas.width!==w || canvas.height!==h){canvas.width=w;canvas.height=h;}
   ctx.save(); if(mirror){ctx.translate(w,0);ctx.scale(-1,1);} ctx.drawImage(source,0,0,w,h);ctx.restore();
@@ -47,34 +41,18 @@ function draw(canvas,source,result,mirror=false){
   }
   for(const hand of result.landmarks || []) for(const p of hand){ctx.beginPath();ctx.arc((mirror?1-p.x:p.x)*w,p.y*h,4,0,2*Math.PI);ctx.fillStyle='#9bf1b5';ctx.fill();}
 }
-function compare(source,result,mirror=false){
-  const panes=[
-    {canvas,input:$('confidence'),count:$('vision-a-count')},
-    {canvas:canvasB,input:$('confidence-b'),count:$('vision-b-count')}
-  ];
-  const counts=panes.map(pane=>{
-    const threshold=Number(pane.input.value);
-    const detections=result.detections.filter(detection=>detection.categories[0].score>=threshold);
-    draw(pane.canvas,source,{detections},mirror);
-    const label=`偵測到 ${detections.length} 張人臉`;
-    if(pane.count.textContent!==label)pane.count.textContent=label;
-    return detections.length;
-  });
-  const summary=`A 偵測到 ${counts[0]} 張，B 偵測到 ${counts[1]} 張`;
-  if($('vision-result').textContent!==summary)$('vision-result').textContent=summary;
-}
 function frame(now){
   if(!stream || !model) return;
   try{
     if(video.readyState>=2 && video.currentTime!==lastFrame && now-lastTick>=100){
       lastFrame=video.currentTime;lastTick=now;
       const result=mode==='game'?model.recognizeForVideo(video,now):model.detectForVideo(video,now);
+      draw(video,result,true);
       if(mode==='game'){
-        draw(canvas,video,result,true);
         const hand=gestureName(result);
         if(hand!==stable){stable=hand;stableSince=now;} seen=now;
         $('vision-result').textContent=hand?`目前手勢：${hand}`:'請以一隻手清楚比出剪刀、石頭或布';
-      }else compare(video,result,true);
+      }else $('vision-result').textContent=`偵測到 ${result.detections.length} 張人臉`;
     }
     animation=requestAnimationFrame(frame);
   }catch(error){failure(error);}
@@ -101,7 +79,7 @@ async function detectImage(){
   stop();const token=generation;busy=true;say('正在載入模型並偵測圖片…');
   try{
     const loaded=await createModel('image');if(token!==generation){loaded.close();return;}model=loaded;
-    imageResult=model.detect(image);compare(image,imageResult);
+    const result=model.detect(image);draw(image,result);$('vision-result').textContent=`偵測到 ${result.detections.length} 張人臉`;
     say('偵測完成。調整門檻可比較結果。');busy=false;
   }catch(error){if(token===generation)failure(error);}
 }
@@ -123,18 +101,15 @@ $('sample-image').addEventListener('click',async()=>{
   try{const sample=$('sample-source');await sample.decode();if(token!==generation)return;image=sample;await detectImage();}
   catch(error){if(token===generation)say('範例圖片讀取失敗，請自行選擇圖片。');}
 });
-for(const id of ['confidence','confidence-b']){
-  $(id).addEventListener('input',()=>{
-    $(`${id}-value`).value=Number($(id).value).toFixed(2);
-    if(mode==='image' && imageResult)compare(image,imageResult);
-  });
-}
+$('confidence').addEventListener('input',()=>{$('confidence-value').value=Number($('confidence').value).toFixed(2);});
+$('confidence').addEventListener('change',async()=>{
+  if(mode==='image'){await detectImage();return;}
+  if(model && mode==='video'){try{await model.setOptions({minDetectionConfidence:Number($('confidence').value)});}catch(error){failure(error);}}
+});
 $('vision-mode')?.addEventListener('change',event=>{
   stop();image=null;$('image-file').value='';mode=event.target.value;clear();
   $('image-controls').hidden=mode!=='image';$('camera-controls').hidden=mode==='image';$('face-controls').hidden=mode==='game';$('game-controls').hidden=mode!=='game';
-  $('vision-b-panel').hidden=mode==='game';$('vision-a-count').hidden=mode==='game';
-  $('vision-a-heading').textContent=mode==='game'?'手勢預覽':'A · 人臉偵測';
-  say(mode==='image'?'請選擇圖片開始。':mode==='game'?'啟用攝影機，將一隻手放在畫面中。':'按下啟用攝影機開始。');
+  say(mode==='image'?'請選擇圖片開始。':'啟用攝影機，將一隻手放在畫面中。');
 });
 $('play-round').addEventListener('click',()=>{
   if(!stream || round)return;

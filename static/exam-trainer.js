@@ -2,69 +2,52 @@
 (function () {
 'use strict';
 const segments = [
- {title:'初始化與偵測器', weight:10, goals:['清空命令視窗與工作區。','使用第 1 台攝影機；Dld 使用大型 RetinaFace 網路。','Mld 為 Haar 偵測器，MergeThreshold 設為 5。'], code:`clc;
+ {title:'初始化與偵測器', weight:10, goals:['清空命令視窗與工作區，啟用第 1 台攝影機。','以 DeepLearning_detector 建立大型 RetinaFace 網路。','以 MachineLearning_detector 建立 Haar 偵測器，MergeThreshold 設為 5。'], code:`clc;
 clear;
 cam = webcam(1);
-Dld = faceDetector('large-network');
-Mld = vision.CascadeObjectDetector();
+DeepLearning_detector = faceDetector("large-network");
+MachineLearning_detector = vision.CascadeObjectDetector();
 Threshold = 5;
-Mld.MergeThreshold = Threshold;`},
- {title:'視窗與停止按鈕', weight:20, goals:['標題固定使用「班級／學號／姓名 | 雙演算法人臉偵測」。','建立停止按鈕；寫入與初始化的鍵名必須相同。'], code:`fig = figure('Name','班級／學號／姓名 | 雙演算法人臉偵測','NumberTitle','off');
-stopBtn = uicontrol('Style','pushbutton', ...
-    'String','停止偵測', ...
-    'Position',[20 20 100 40], ...
-    'FontSize',12, ...
-    'Callback',@(src,event)setappdata(fig,'stopFlag',true));
-setappdata(fig,'stopFlag',false);`},
- {title:'迴圈與影像擷取', weight:15, goals:['以 try 包住偵測迴圈。','視窗存在時持續執行；按停止時 break。','擷取並左右翻轉同一張畫面，存於 image。'], code:`try
-    while ishandle(fig)
-        if getappdata(fig,'stopFlag')
-            break;
-        end
-        image = fliplr(snapshot(cam));`},
- {title:'雙演算法與人臉框', weight:20, goals:['RetinaFace 使用 detect，Haar 使用 step。','先保留原影像，僅在框非空時加標記。','本練習 RetinaFace 紅框，Haar 綠框；實際依監評指定。'], code:`        [bboxes,scores] = detect(Dld,image);
-        Dld_image = image;
-        if ~isempty(bboxes)
-            Dld_image = insertObjectAnnotation(image,'rectangle', ...
-                bboxes,'Detected','FontSize',20,'Color','red', ...
-                'LineWidth',5,'TextColor','white');
-        end
-        bbox = step(Mld,image);
-        Mld_image = image;
-        if ~isempty(bbox)
-            Mld_image = insertObjectAnnotation(image,'rectangle', ...
-                bbox,'Detected','FontSize',20,'Color','green', ...
-                'LineWidth',5,'TextColor','white');
-        end`},
- {title:'左右畫面與計數', weight:25, goals:['左側 RetinaFace，右側 Haar，明確顯示演算法名稱。','以框矩陣列數計算人臉數，沒有框時顯示 0。','只在 Haar 標示 MergeThreshold。'], code:`        subplot(1,2,1,'Parent',fig);
-        imshow(Dld_image);
-        title(['RetinaFace 人臉數量：' num2str(size(bboxes,1))]);
-        xlabel('深度學習 / RetinaFace');
-        subplot(1,2,2,'Parent',fig);
-        imshow(Mld_image);
-        title(['Haar 人臉數量：' num2str(size(bbox,1))]);
-        xlabel(['Haar / MergeThreshold = ' num2str(Threshold)]);`},
- {title:'更新、結束與清理', weight:10, goals:['drawnow 更新畫面並處理按鈕事件。','正確關閉 while、try/catch 結構。','正常停止及例外時皆清除 cam；例外仍重新拋出。'], code:`        drawnow;
+MachineLearning_detector.MergeThreshold = Threshold;`},
+ {title:'視窗與停止按鈕', weight:20, goals:['視窗標題使用「班級/學號/姓名」。','按鈕寫入 stopFlag 為 true，初始化設為 false。'], code:`fig = figure('Name', '班級/學號/姓名', 'NumberTitle', 'off');
+stopBtn = uicontrol('Style', 'pushbutton', ...
+    'String', '停止偵測', ...
+    'Position', [20 20 100 40], ...
+    'FontSize', 12, ...
+    'Callback', @(src, event) setappdata(fig, 'stopFlag', true));
+setappdata(fig, 'stopFlag', false);`},
+ {title:'迴圈與影像擷取', weight:15, goals:['使用 while ishandle(fig) 讓視窗存在時持續執行。','按停止時 break，否則擷取並左右翻轉同一張畫面。'], code:`while ishandle(fig)
+    if getappdata(fig, 'stopFlag')
+        break;
     end
-catch ME
-    clear cam;
-    if isgraphics(fig)
-        close(fig);
-    end
-    rethrow(ME);
+    image = fliplr(snapshot(cam));`},
+ {title:'雙演算法與人臉框', weight:20, goals:['RetinaFace 用 detect 取得 bboxes 和 scores，Haar 用 step 取得 bbox。','兩組結果使用 insertObjectAnnotation 畫紅框，標記 Detected。'], code:`    [bboxes, scores] = detect(DeepLearning_detector, image);
+    DeepLearning_detected_image = insertObjectAnnotation(image, 'rectangle', bboxes, 'Detected', ...
+        'FontSize', 20, 'Color', 'red', 'LineWidth', 5, 'TextColor', 'white');
+    bbox = step(MachineLearning_detector, image);
+    MachineLearning_detected_image = insertObjectAnnotation(image, 'rectangle', bbox, 'Detected', ...
+        'FontSize', 20, 'Color', 'red', 'LineWidth', 5, 'TextColor', 'white');`},
+ {title:'上下畫面與計數', weight:25, goals:['上方 RetinaFace 用 subplot(2, 1, 1)，下方 Haar 用 subplot(2, 1, 2)。','上方用 size(bboxes, 1)，下方用 size(bbox, 1) 計數。','只在 Haar 標示 Threshold。標籤冒號後留空格，文字與 num2str 也要分隔。'], code:`    subplot(2, 1, 1);
+    imshow(DeepLearning_detected_image);
+    title(['人臉偵測數量為: ' num2str(size(bboxes, 1))]);
+    xlabel('深度學習/RetinaFace人臉偵測');
+
+    subplot(2, 1, 2);
+    imshow(MachineLearning_detected_image);
+    title(['人臉偵測數量為: ' num2str(size(bbox, 1))]);
+    xlabel(['機器學習/Haar特徵人臉偵測，門檻值為: ' num2str(Threshold)]);`},
+ {title:'更新、結束與清理', weight:10, goals:['drawnow 放在 while 裡更新畫面並處理按鈕。','跳出迴圈後清除 cam、關閉視窗並顯示結束訊息。'], code:`    drawnow;
 end
 clear cam;
-if isgraphics(fig)
-    close(fig);
-end
+close all;
 disp('程式結束');`}
 ];
 const fullCode = segments.map(s=>s.code).join('\n\n');
 const library = [
  ['clc','clc','清空命令視窗。'],['clear','clear cam','移除變數；clear cam 釋放攝影機。'],['webcam','cam = webcam(1)','連接指定攝影機。'],['snapshot','image = snapshot(cam)','擷取一張攝影機影像。'],['fliplr','B = fliplr(A)','左右翻轉陣列或影像。'],
- ['faceDetector',"Dld = faceDetector('large-network')",'建立 RetinaFace 人臉偵測器。'],['vision.CascadeObjectDetector','Mld = vision.CascadeObjectDetector()','建立 Haar 級聯人臉偵測器。'],['detect','[bboxes,scores] = detect(Dld,image)','取得 RetinaFace 人臉框及信心分數。'],['step','bbox = step(Mld,image)','取得 Haar 偵測框。'],['figure',"fig = figure('Name',...)",'建立圖形視窗。'],['uicontrol',"uicontrol('Style','pushbutton',...)",'建立按鈕或其他控制元件。'],['setappdata',"setappdata(fig,'stopFlag',false)",'儲存視窗附加資料。'],['getappdata',"getappdata(fig,'stopFlag')",'讀取視窗附加資料。'],['ishandle','ishandle(fig)','判斷圖形控制代碼是否存在。'],['isgraphics','isgraphics(fig)','判斷是否為有效圖形物件。'],['isempty','isempty(bboxes)','判斷是否為空陣列。'],['insertObjectAnnotation',"insertObjectAnnotation(image,'rectangle',bboxes,'Detected',...)",'在影像加上方框與文字。'],['insertShape',"insertShape(image,'Rectangle',bboxes)",'在影像加入形狀；此練習答案使用 insertObjectAnnotation。'],['subplot',"subplot(1,2,1,'Parent',fig)",'建立或選取子圖區域。'],['imshow','imshow(image)','顯示影像。'],['title','title(text)','設定目前圖軸標題。'],['xlabel','xlabel(text)','設定目前圖軸下方標籤。'],['num2str','num2str(value)','把數值轉為字元。'],['size','size(bboxes,1)','取得第 1 維大小，即框的列數。'],['drawnow','drawnow','更新圖形並處理事件。'],['close','close(fig)','關閉指定視窗。'],['disp',"disp('程式結束')",'輸出訊息。'],['rethrow','rethrow(ME)','重新拋出已捕捉的例外。'],
+ ['faceDetector',"DeepLearning_detector = faceDetector(\"large-network\")",'建立 RetinaFace 人臉偵測器。'],['vision.CascadeObjectDetector','MachineLearning_detector = vision.CascadeObjectDetector()','建立 Haar 級聯人臉偵測器。'],['detect','[bboxes,scores] = detect(DeepLearning_detector,image)','取得 RetinaFace 人臉框及信心分數。'],['step','bbox = step(MachineLearning_detector,image)','取得 Haar 偵測框。'],['figure',"fig = figure('Name',...)",'建立圖形視窗。'],['uicontrol',"uicontrol('Style','pushbutton',...)",'建立按鈕或其他控制元件。'],['setappdata',"setappdata(fig,'stopFlag',false)",'儲存視窗附加資料。'],['getappdata',"getappdata(fig,'stopFlag')",'讀取視窗附加資料。'],['ishandle','ishandle(fig)','判斷圖形控制代碼是否存在。'],['isgraphics','isgraphics(fig)','判斷是否為有效圖形物件。'],['isempty','isempty(bboxes)','判斷是否為空陣列。'],['insertObjectAnnotation',"insertObjectAnnotation(image,'rectangle',bboxes,'Detected',...)",'在影像加上方框與文字。'],['insertShape',"insertShape(image,'Rectangle',bboxes)",'在影像加入形狀；此練習答案使用 insertObjectAnnotation。'],['subplot',"subplot(2,1,1)",'建立或選取子圖區域。'],['imshow','imshow(image)','顯示影像。'],['title','title(text)','設定目前圖軸標題。'],['xlabel','xlabel(text)','設定目前圖軸下方標籤。'],['num2str','num2str(value)','把數值轉為字元。'],['size','size(bboxes,1)','取得第 1 維大小，即框的列數。'],['drawnow','drawnow','更新圖形並處理事件。'],['close','close(fig)','關閉指定視窗。'],['disp',"disp('程式結束')",'輸出訊息。'],['rethrow','rethrow(ME)','重新拋出已捕捉的例外。'],
  ['while','while condition','條件成立時重複執行；以 end 結束。'],['if','if condition','條件判斷；以 end 結束。'],['break','break','離開最內層迴圈。'],['try','try','開始例外處理區塊。'],['catch','catch ME','接收例外物件。'],['end','end','結束 if、while 或 try/catch 區塊。'],['true','true','邏輯真。'],['false','false','邏輯假。'],
- ['MergeThreshold','Mld.MergeThreshold = Threshold','Haar 合併門檻，預設 4；不是 RetinaFace 信心門檻。'],['Name',"'Name','視窗名稱'",'figure 的視窗名稱屬性。'],['NumberTitle',"'NumberTitle','off'",'關閉視窗標題的編號。'],['Style',"'Style','pushbutton'",'控制元件類型。'],['String',"'String','停止偵測'",'按鈕文字。'],['Position',"'Position',[20 20 100 40]",'左下角位置、寬、高。'],['FontSize',"'FontSize',12",'文字大小。'],['Callback',"'Callback',@(src,event)...",'按鈕回呼函式。'],['Color',"'Color','red'",'框線顏色。'],['LineWidth',"'LineWidth',5",'框線寬度。'],['TextColor',"'TextColor','white'",'標記文字顏色。'],['Parent',"'Parent',fig",'指定父視窗。']
+ ['MergeThreshold','MachineLearning_detector.MergeThreshold = Threshold','Haar 合併門檻，預設 4；不是 RetinaFace 信心門檻。'],['Name',"'Name','視窗名稱'",'figure 的視窗名稱屬性。'],['NumberTitle',"'NumberTitle','off'",'關閉視窗標題的編號。'],['Style',"'Style','pushbutton'",'控制元件類型。'],['String',"'String','停止偵測'",'按鈕文字。'],['Position',"'Position',[20 20 100 40]",'左下角位置、寬、高。'],['FontSize',"'FontSize',12",'文字大小。'],['Callback',"'Callback',@(src,event)...",'按鈕回呼函式。'],['Color',"'Color','red'",'框線顏色。'],['LineWidth',"'LineWidth',5",'框線寬度。'],['TextColor',"'TextColor','white'",'標記文字顏色。'],['Parent',"'Parent',fig",'指定父視窗。']
 ];
 // Tokenize without changing string contents or case; comments and layout are ignored.
 function lex(source) {
@@ -88,7 +71,15 @@ function lex(source) {
   else if(/[0-9]/.test(c)){i++;while(i<source.length&&/[\d.]/.test(source[i]))i++;}
   else if(['==','~=','<=','>=','&&','||','.*','./','.^'].includes(source.slice(i,i+2)))i+=2;
   else i++;
-  const value=source.slice(start,i);if(value==='[')matrixDepth++;if(value===']')matrixDepth=Math.max(0,matrixDepth-1);out.push({value,line:atLine});previous=value;
+  const value=source.slice(start,i);
+  if(matrixDepth>0 && value==='num2str'){
+   const separator='空格或逗號（字串與 num2str 之間）';
+   if(/^['"]/.test(previous) && /\s/.test(source[start-1]))out.push({value:separator,line:atLine});
+   else if(previous===',' && /^['"]/.test(out.at(-2)?.value || ''))out.at(-1).value=separator;
+  }
+  if(value==='[')matrixDepth++;
+  if(value===']')matrixDepth=Math.max(0,matrixDepth-1);
+  out.push({value,line:atLine});previous=value;
  }
  return out;
 }
@@ -199,7 +190,7 @@ function updateCompletion(force=false){
  if(before.slice(before.lastIndexOf('\n')+1).trimStart().startsWith('%')){closeCompletion();return;}
  let searchPrefix=prefix;
  if(prefix.includes('.')&&!prefix.startsWith('vision.')){searchPrefix=prefix.split('.').pop();completionStart=pos-searchPrefix.length;}
- const variables=['cam','Dld','Mld','Threshold','fig','stopBtn','image','bboxes','scores','Dld_image','bbox','Mld_image'].map(name=>[name,name,'練習程式中的變數；拼字及大小寫需一致。']);
+ const variables=['cam','DeepLearning_detector','MachineLearning_detector','Threshold','fig','stopBtn','image','bboxes','scores','DeepLearning_detected_image','bbox','MachineLearning_detected_image'].map(name=>[name,name,'練習程式中的變數；拼字及大小寫需一致。']);
  completion=[...library,...variables].filter(row=>row[0].toLowerCase().startsWith(searchPrefix.toLowerCase())&&row[0]!==searchPrefix).slice(0,7);
  if(!completion.length){closeCompletion();return;}completionIndex=0;assisted();drawCompletion();
  const lines=before.split('\n'),top=Math.max(36,Math.min(235,14+lines.length*23-editor.scrollTop));$('completion-popup').style.top=top+'px';
@@ -230,7 +221,7 @@ $('new-round').onclick=()=>{if(editor.value&&!confirm('清空這一段草稿，�
 $('start-exam').onclick=()=>{if(state.exam?.submitted&&!confirm('開始新測驗？上一份交卷程式將被取代，歷史分數仍保留。'))return;state.exam={draft:'',start:Date.now(),submitted:false};persist();render();editor.focus();};
 $('submit-exam').onclick=()=>{if(!$('cancel-submit').hidden){finishExam();return;}$('submit-exam').textContent='確認交卷並停止編輯';$('cancel-submit').hidden=false;};
 $('cancel-submit').onclick=()=>{$('cancel-submit').hidden=true;$('submit-exam').textContent='交卷評分';editor.focus();};
-const checklist=['攝影機持續擷取同一畫面，兩種演算法同時顯示。','視窗含班級／學號／姓名，兩側標示演算法名稱。','依監評指定框色，無人臉時兩側顯示 0。','紙本多人臉圖由攝影機拍攝；正確框住實際人臉。','至少調整兩次 MergeThreshold，記錄正確／漏檢／誤檢數。','停止按鈕、關閉視窗正常結束，釋放攝影機。','依要求完成程式註解，並於 MATLAB 驗證後存成 .mlx。'];
+const checklist=['攝影機持續擷取同一畫面，兩種演算法同時顯示。','視窗含班級／學號／姓名，上下兩格標示演算法名稱。','依監評指定框色，無人臉時對應畫面顯示 0。','紙本多人臉圖由攝影機拍攝；正確框住實際人臉。','至少調整兩次 MergeThreshold，記錄正確／漏檢／誤檢數。','停止按鈕、關閉視窗正常結束，釋放攝影機。','依要求完成程式註解，並於 MATLAB 驗證後存成 .mlx。'];
 function renderChecks(){$('acceptance').innerHTML='';checklist.forEach((text,i)=>{const label=document.createElement('label'),input=document.createElement('input');input.type='checkbox';input.checked=!!state.checks[i];input.onchange=()=>{state.checks=checklist.map((_,n)=>n===i?input.checked:!!state.checks[n]);persist();};label.append(input,document.createTextNode(text));$('acceptance').append(label);});}
 function download(text,name,type){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 $('download-code').onclick=()=>{if(state.exam&&!state.exam.submitted){alert('完整測驗進行中，交卷後才能下載答案。');return;}assisted();download('% 練習參考答案，未在實體 MATLAB 與攝影機驗證。\n% 身分標題與框色請依考試要求修改。\n'+fullCode+'\n','final_practice.m','text/plain;charset=utf-8');};
