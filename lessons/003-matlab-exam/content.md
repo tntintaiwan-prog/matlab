@@ -6,18 +6,6 @@
 
 點選上方「開始背程式與測驗」，依序完成初始化、控制視窗、影像迴圈、人臉偵測、結果顯示、結束清理。每段兩次獨立、未查看提示且完全正確的練習後，標示為已背熟。
 
-## 原稿需要修正
-
-| 原稿 | 修正與原因 |
-| --- | --- |
-| stopFlage | 改為 stopFlag，初始化、按鈕與迴圈必須讀寫相同鍵名。 |
-| RetinaFance | 改為 RetinaFace，顯示文字拼字錯誤。 |
-| Hear Like Feature | 改為 Haar-like features，註解拼字錯誤。 |
-| Wecom、Packagea、及時、減查 | 分別改為 Webcam、Packages、即時、檢查。 |
-| MergeThreshold 範圍 0 至 10 | 官方未限定上限為 10；預設 4。提高通常減少誤檢，也可能增加漏檢。 |
-| RetinaFace 標示相同 Threshold | 原稿僅把此值設定到 Haar，不應說成 RetinaFace 的門檻。 |
-| 視窗標題缺身分資料 | 實際應填入班級、學號與姓名；練習使用固定文字「班級/學號/姓名」。 |
-
 ## 練習版的範圍
 
 練習採 LEVEL1 PDF 的變數命名和上下配置。上方 RetinaFace 使用 `bboxes`，下方 Haar 使用 `bbox`，兩組預設紅框。若現場指定左右排列，兩格一起改為 `subplot(1,2,1)` 與 `subplot(1,2,2)`。這個默寫練習以 PDF 啟用的上下配置為準。
