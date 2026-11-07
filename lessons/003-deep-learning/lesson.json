@@ -1,0 +1,11 @@
+{
+  "title": "深度學習與人臉偵測",
+  "date": "2026-11-07",
+  "summary": "比較 Haar 和 RetinaFace，閱讀深度學習心得與補充影片，再用雙滑桿觀察偵測門檻的影響。",
+  "author": "陳世展",
+  "class_name": "控制三甲",
+  "published": true,
+  "interactive": "face-compare",
+  "experiment_title": "人臉偵測門檻對照",
+  "date_note": "2026-11-07 為網站整理日期。"
+}
